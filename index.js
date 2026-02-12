@@ -5,6 +5,8 @@ import userRouter from './Routes/user.route.js'
 import userAuth from "./Middlewares/userAuth.js";
 import rateLimit from "express-rate-limit";
 import cors from 'cors'
+import fs from 'fs'
+import path from 'path';
 connectDB();
 
 const limiter = rateLimit({
@@ -22,7 +24,7 @@ app.use(cors({
 //middlewares
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
-app.use("/uploads",express.static(Path.join(import.meta.dirname,'uploads')));
+app.use("/uploads",express.static(path.join(import.meta.dirname,'uploads')));
 app.use(limiter)
 
 app.use('/api/users',userRouter);
