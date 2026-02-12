@@ -3,7 +3,6 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import studentModel from "../Models/studentModel.js";
-import { error } from "console";
 const router = express.Router();
 
 const Storage = multer.diskStorage({
@@ -53,6 +52,7 @@ router.post("/", upload.single("student_photo"), async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     let data = await studentModel.find(req.body);
+    console.log(req.body);
     res.json(data);
   } catch (error) {
     res.status(500).json({
@@ -95,7 +95,7 @@ router.put("/:id", async (req, res) => {
 
 router.put("/:id", upload.single("student_photo"), async (req, res) => {
   try {
-    let existingStudent = await studentModel.findById(req.body);
+    let existingStudent = await studentModel.findById(req.params.id);
     //Duplicate image update
 
     if (!existingStudent) {

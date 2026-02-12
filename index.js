@@ -9,7 +9,7 @@ connectDB();
 
 const limiter = rateLimit({
     windowMs: 1000 * 60,
-    max: 5,
+    max: 10,
     message: "Too many request from this IP, please try later"
 });
 
@@ -22,11 +22,11 @@ app.use(cors({
 //middlewares
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
+app.use("/uploads",express.static(Path.join(import.meta.dirname,'uploads')));
 app.use(limiter)
 
 app.use('/api/users',userRouter);
 app.use('/api/students',userAuth,studentRouter);
-
 
 const PORT = process.env.PORT
 
