@@ -5,13 +5,12 @@ import userRouter from './Routes/user.route.js'
 import userAuth from "./Middlewares/userAuth.js";
 import rateLimit from "express-rate-limit";
 import cors from 'cors'
-import fs from 'fs'
 import path from 'path';
 connectDB();
 
 const limiter = rateLimit({
     windowMs: 1000 * 60,
-    max: 10,
+    max: 50,
     message: "Too many request from this IP, please try later"
 });
 
@@ -21,11 +20,14 @@ app.use(cors({
     methods: ["GET","POST","PUT","DELETE"],
     credentials: true
 }));
+
+app.use(limiter);
+
 //middlewares
-app.use(express.urlencoded({extended:true}));
 app.use(express.json());
-app.use("/uploads",express.static(path.join(import.meta.dirname,'uploads')));
-app.use(limiter)
+app.use(express.urlencoded({extended:true}));
+
+app.use("./uploads",express.static(path.join(import.meta.dirname,'./uploads')));
 
 app.use('/api/users',userRouter);
 app.use('/api/students',userAuth,studentRouter);

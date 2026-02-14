@@ -7,7 +7,7 @@ const router = express.Router();
 
 const Storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "/uploads");
+    cb(null, "./uploads");
   },
   filename: (req, file, cb) => {
     let newFile = Date.now() + path.extname(file.originalname);
@@ -35,11 +35,10 @@ const upload = multer({
 
 router.post("/", upload.single("student_photo"), async (req, res) => {
   try {
-    let data = await studentModel(req.body);
     if (req.file) {
-      data.student_photo = req.file.filename;
+      req.body.student_photo = req.file.filename;
     }
-    let newStudentData = await data.save();
+    let newStudentData = await studentModel.create(req.body);
     res.status(200).json(newStudentData);
   } catch (error) {
     res.status(500).json({
@@ -100,7 +99,7 @@ router.put("/:id", upload.single("student_photo"), async (req, res) => {
 
     if (!existingStudent) {
       if (req.file.filename) {
-        const filePath = path.join("/uploads", req.file.filename);
+        const filePath = path.join("./uploads", req.file.filename);
         fs.unlink(filePath, (err) => {
           if (err) {
             console.log("Failed to delete image", err);

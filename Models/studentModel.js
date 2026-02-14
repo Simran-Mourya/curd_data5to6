@@ -32,8 +32,7 @@ const studentSchema = new mongoose.Schema({
         enum:['Male', 'Female', 'other']
      },
       student_photo:{
-        type:String,
-        required: true,
+        type:String
      } 
 });
 
