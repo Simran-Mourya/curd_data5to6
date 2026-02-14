@@ -30,7 +30,7 @@ app.use(express.urlencoded({extended:true}));
 app.use("./uploads",express.static(path.join(import.meta.dirname,'./uploads')));
 
 app.use('/api/users',userRouter);
-app.use('/api/students',userAuth,studentRouter);
+app.use('/students',userAuth, studentRouter);
 
 const PORT = process.env.PORT
 

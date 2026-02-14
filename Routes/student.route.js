@@ -39,7 +39,8 @@ router.post("/", upload.single("student_photo"), async (req, res) => {
       req.body.student_photo = req.file.filename;
     }
     let newStudentData = await studentModel.create(req.body);
-    res.status(200).json(newStudentData);
+    console.log(newStudentData);
+    res.status(201).json(newStudentData);
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -79,7 +80,9 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-    let data = await studentModel.findByIdAndUpdate(req.params.id, req.body, { new: true});
+    let data = await studentModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     if (!data)
       res.status(404).json({
         message: "Student data not found!",
@@ -126,7 +129,8 @@ router.put("/:id", upload.single("student_photo"), async (req, res) => {
     let data = await studentModel.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    if(!data) res.status(404).json({
+    if (!data)
+      res.status(404).json({
         message: error.message,
       });
     res.json(data);
@@ -139,44 +143,46 @@ router.put("/:id", upload.single("student_photo"), async (req, res) => {
 
 // Search Api
 
-router.get('/search/:key', async (req,res)=>{
-    try {
-        let key = req.params.key
-        let searchCon = [
-            {student_name:{$regex: key, $options: 'i'}},
-            {student_email:{$regex: key, $options: 'i'}},
-        ]
-        if(!isNaN(key)){
-            searchCon.push({$or: [{student_age:Number(key)}, {_id:Number(key)} ]})
-        }
-        let data = await studentModel.find({
-            $or:searchCon
-        })
-
-        if(data.length === 0){
-            res.status(404).json({ message: "Student data not found"})
-        }
-        res.status(200).json({message:"Searched Data:",data})
-    } catch (error) {
-        res.status(500).json({message:error.message});
+router.get("/search/:key", async (req, res) => {
+  try {
+    let key = req.params.key;
+    let searchCon = [
+      { student_name: { $regex: key, $options: "i" } },
+      { student_email: { $regex: key, $options: "i" } },
+    ];
+    if (!isNaN(key)) {
+      searchCon.push({
+        $or: [{ student_age: Number(key) }, { _id: Number(key) }],
+      });
     }
+    let data = await studentModel.find({
+      $or: searchCon,
+    });
+
+    if (data.length === 0) {
+      res.status(404).json({ message: "Student data not found" });
+    }
+    res.status(200).json({ message: "Searched Data:", data });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-// Delete Data 
+// Delete Data
 
-router.delete('/:id', async (req,res)=>{
-    try {
-        let data = await studentModel.findByIdAndDelete(req.params.id);
-        if(!data.student_photo){
-         let oldFilePath = path.join('./uploads',data.student_photo);
-         fs.unlink(oldFilePath,(err)=>{
-            if(err)console.log('failed to delete img!!', err);
-         });
-        }
-        res.json({message:"message deleted"});
-    } catch (error) {
-        res.status(500).json({message:error.message});
+router.delete("/:id", async (req, res) => {
+  try {
+    let data = await studentModel.findByIdAndDelete(req.params.id);
+    if (!data.student_photo) {
+      let oldFilePath = path.join("./uploads", data.student_photo);
+      fs.unlink(oldFilePath, (err) => {
+        if (err) console.log("failed to delete img!!", err);
+      });
     }
+    res.json({ message: "message deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 export default router;
