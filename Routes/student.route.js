@@ -63,9 +63,9 @@ router.get("/", async (req, res) => {
 
 //Read One Data
 
-router.get("/:id", async (req, res) => {
+router.get("/:_id", async (req, res) => {
   try {
-    let data = await studentModel.findById(req.params.id);
+    let data = await studentModel.findById(req.params._id);
     if (!data)
       res.status(404).json({
         message: "Student data not found!",
@@ -78,11 +78,9 @@ router.get("/:id", async (req, res) => {
 
 //Student Update Data
 
-router.put("/:id", async (req, res) => {
+router.put("/:_id", async (req, res) => {
   try {
-    let data = await studentModel.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    let data = await studentModel.findById(req.params._id);
     if (!data)
       res.status(404).json({
         message: "Student data not found!",
@@ -95,23 +93,10 @@ router.put("/:id", async (req, res) => {
 
 // Update student data with fs module for image
 
-router.put("/:id", upload.single("student_photo"), async (req, res) => {
+router.put("/:_id", upload.single("student_photo"), async (req, res) => {
   try {
-    let existingStudent = await studentModel.findById(req.params.id);
-    //Duplicate image update
-
-    if (!existingStudent) {
-      if (req.file.filename) {
-        const filePath = path.join("./uploads", req.file.filename);
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.log("Failed to delete image", err);
-          }
-        });
-      }
-      return res.status(404).json({ message: "Student data not found" });
-    }
-
+    let existingStudent = await studentModel.findById(req.params._id);
+ 
     //image update
 
     if (req.file) {
@@ -126,7 +111,7 @@ router.put("/:id", upload.single("student_photo"), async (req, res) => {
       req.body.student_photo = req.file.filename;
     }
 
-    let data = await studentModel.findByIdAndUpdate(req.params.id, req.body, {
+    let data = await studentModel.findByIdAndUpdate(req.params._id, req.body, {
       new: true,
     });
     if (!data)
@@ -170,9 +155,9 @@ router.get("/search/:key", async (req, res) => {
 
 // Delete Data
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:_id", async (req, res) => {
   try {
-    let data = await studentModel.findByIdAndDelete(req.params.id);
+    let data = await studentModel.findByIdAndDelete(req.params._id);
     if (!data.student_photo) {
       let oldFilePath = path.join("./uploads", data.student_photo);
       fs.unlink(oldFilePath, (err) => {
